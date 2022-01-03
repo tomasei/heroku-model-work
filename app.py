@@ -79,6 +79,18 @@ def predict():
     return jsonify(response)
 
 
+@app.route('/update', methods=['POST'])
+def update():
+    obs = request.get_json()
+    try:
+        p = Prediction.get(Prediction.observation_id == obs['id'])
+        p.true_class = obs['true_class']
+        p.save()
+        return jsonify(model_to_dict(p))
+    except Prediction.DoesNotExist:
+        error_msg = 'Observation ID: "{}" does not exist'.format(obs['id'])
+        return jsonify({'error': error_msg})
+
 # End webserver stuff
 ########################################
 
